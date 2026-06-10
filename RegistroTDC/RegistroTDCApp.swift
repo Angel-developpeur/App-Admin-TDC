@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct RegistroTDCApp: App {
@@ -13,5 +14,7 @@ struct RegistroTDCApp: App {
         WindowGroup {
             ContentView()
         }
+        //permitimos que toda la aplicacion tenga acceso al modelo
+        .modelContainer(for: Tarjeta.self)
     }
 }
