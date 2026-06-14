@@ -12,9 +12,10 @@ import SwiftData
 struct RegistroTDCApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            //ContentView()
+            PantallaBloqueoView() //llamos a la pantallade desbloqueo
         }
         //permitimos que toda la aplicacion tenga acceso al modelo
-        .modelContainer(for: Tarjeta.self)
+        .modelContainer(for: [Tarjeta.self, Compra.self])
     }
 }

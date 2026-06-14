@@ -1,3 +1,5 @@
+//Este archivo esta protegido por la licencia GPL, 2026
+
 import SwiftUI
 import SwiftData
 
@@ -25,58 +27,45 @@ struct ContentView: View {
                                     description: Text("Toca el botón + para registrar tu primera tarjeta.")
                                 )
                             } else {
-                                // 3. Si hay datos, los pintamos en una lista nativa
-                                //List(tarjetas) { tarjeta in
-                                //  HStack {
-                                //    VStack(alignment: .leading) {
-                                //      Text(tarjeta.banco)
-                                //        .font(.headline)
-                                //  Text(tarjeta.tipo)
-                                //    .font(.subheadline)
-                                //  .foregroundStyle(.secondary)
-                                // }
-                                
-                                //Spacer()
-                                // Mostramos los últimos 4 dígitos simulando seguridad
-                                //Text("•••• \(tarjeta.ultimosDigitos)")
-                                //  .font(.system(.body, design: .monospaced))
-                                //}
-                                // .padding()
-                                // .background(Color(hex: tarjeta.color))
-                                //.clipShape(RoundedRectangle(cornerRadius: 12))
-                                // }
                                 ForEach(tarjetas) { tarjeta in
                                     
-                                    let colorFondo = Color(hex: tarjeta.color)
-                                    HStack{
-                                        VStack(alignment: .leading, spacing: 8){
-                                            Text(tarjeta.banco).font(.headline)
-                                            // ¡EL CAMBIO MÁGICO AQUÍ!
-                                                if tarjeta.nombreLogo.isEmpty {
-                                                    // Si no hay logo para este tipo, mostramos el texto como antes
-                                                    Text(tarjeta.tipo)
-                                                        .font(.subheadline)
-                                                        .opacity(0.8)
-                                                } else {
-                                                    // Si tenemos el logo, lo pintamos
-                                                    Image(tarjeta.nombreLogo)
-                                                        .resizable()
-                                                        .scaledToFit()
-                                                        .frame(height: 20) // Altura fija para mantener el diseño consistente
-                                                }
+                                    NavigationLink{
+                                    
+                                        DetalleTarjetaView(tarjeta: tarjeta) //indicar a que vista nos vomeros a si como enviarle datos
+                                    } label: {
+                                        let colorFondo = Color(hex: tarjeta.color)
+                                        HStack{
+                                            VStack(alignment: .leading, spacing: 8){
+                                                Text(tarjeta.banco).font(.headline)
+                                                // ¡EL CAMBIO MÁGICO AQUÍ!
+                                                    if tarjeta.nombreLogo.isEmpty {
+                                                        // Si no hay logo para este tipo, mostramos el texto como antes
+                                                        Text(tarjeta.tipo)
+                                                            .font(.subheadline)
+                                                            .opacity(0.8)
+                                                    } else {
+                                                        // Si tenemos el logo, lo pintamos
+                                                        Image(tarjeta.nombreLogo)
+                                                            .resizable()
+                                                            .scaledToFit()
+                                                            .frame(height: 20) // Altura fija para mantener el diseño consistente
+                                                    }
+                                            }
+                                            Spacer()
+                                            Text("•••• \(tarjeta.ultimosDigitos)").font(.system(.body, design:.monospaced))
                                         }
-                                        Spacer()
-                                        Text("•••• \(tarjeta.ultimosDigitos)").font(.system(.body, design:.monospaced))
-                                    }
-                                    // SOLUCIÓN 2: Forzar todo el texto interno a blanco
-                                    .foregroundStyle(colorFondo.textoIdeal)
+                                        // SOLUCIÓN 2: Forzar todo el texto interno a blanco
+                                        .foregroundStyle(colorFondo.textoIdeal)
+                                            
+                                        .padding(20)
                                         
-                                    .padding(20)
+                                        // 3. Pintamos el fondo
+                                        .background(colorFondo)
+                                        
+                                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                                    }.buttonStyle(.plain)
                                     
-                                    // 3. Pintamos el fondo
-                                    .background(colorFondo)
-                                    
-                                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                                   
                                     
                                 }
                             }
@@ -113,10 +102,21 @@ struct ContentView: View {
             .tag(1) // con tag le indicamos que este es la opcion 1
             
             //un texto sera la visa dos
-            Text("Aquí iría otra pantalla completa de de  gggh jfiewj")
-                .tabItem {
-                    Label("Deuda", systemImage: "dollarsign")
+            VStack{
+                var totalDeuda: Int {
+                    var suma = 0
+                    for tarjeta in tarjetas {
+                        for compra in tarjeta.compras {
+                            suma += compra.monto
+                        }
+                    }
+                    return suma
                 }
+                Text("Deuda total de todas las compras : " + String(totalDeuda))
+            }//fin del vstal
+            .tabItem {
+                Label("Deuda", systemImage: "dollarsign")
+            }
 
         }.tint(.blue)
         // 1. El NavigationStack envuelve a toda la pantalla
@@ -139,6 +139,9 @@ struct FormularioTarjetaView: View {
     @State private var esPrincipal = false
     @State private var limiteCredito: Double = 10000
     @State private var colorDeTarjeta: Color = .blue
+    @State private var nip = ""
+    @State private var diaDeCorte: Int = 0
+    @State private var creditoUsado = ""
     
     let tipos = ["Visa", "MasterCard", "American Express"]
     
@@ -146,7 +149,10 @@ struct FormularioTarjetaView: View {
     // y si los últimos dígitos son exactamente 4.
     var formularioEsValido: Bool {
         !banco.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-        ultimosDigitos.count == 4
+        ultimosDigitos.count == 4 &&
+        !diaDeCorte.description.isEmpty &&
+        nip.trimmingCharacters(in: .whitespacesAndNewlines).count == 4
+        
     }
     
     var body: some View {
@@ -164,9 +170,20 @@ struct FormularioTarjetaView: View {
                         ForEach(tipos, id: \.self) { Text($0).tag($0) }
                     }
                     Stepper("Límite: $\(limiteCredito, specifier: "%.0f")", value: $limiteCredito, step: 100)
+                    
 
                     // Slider: Barra deslizable
                     Slider(value: $limiteCredito, in: 3000...50000, step: 100)
+                    TextField("Credito usado", text: $creditoUsado).keyboardType(.numberPad)
+                    TextField("Nip", text: $nip)
+                    Picker("Día de corte", selection: $diaDeCorte) {
+                                            ForEach(1...31, id: \.self) { dia in
+                                                // El .tag() es crucial para que el Picker sepa qué valor asignar
+                                                Text("\(dia)").tag(dia)
+                                            }
+                                        }
+                                        // Opcional: Le da un estilo de menú desplegable nativo en iOS 16+
+                                        .pickerStyle(.menu)
                 }
             }
             .navigationTitle("Nueva Tarjeta")
@@ -183,7 +200,10 @@ struct FormularioTarjetaView: View {
                             ultimosDigitos: ultimosDigitos,
                             tipo: tipoSeleccionado,
                             color: colorDeTarjeta.toHex(),
-                            limiteCrdito: limiteCredito
+                            limiteCrdito: limiteCredito,
+                            nip: nip,
+                            diaDeCorte: diaDeCorte,
+                            creditoUsado: Int((Double(creditoUsado) ?? 0)) * 100,
                             
                         )
                         //insertamo el objeto en la memoria local

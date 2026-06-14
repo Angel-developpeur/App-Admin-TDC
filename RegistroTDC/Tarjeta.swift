@@ -10,19 +10,33 @@ import SwiftUI
 
 @Model //indicamos que se trata de un mdoelo
 class Tarjeta {
+    //crear id
+    @Attribute(.unique) var id: UUID
+    
+    
     var banco: String
     var ultimosDigitos: String
     var tipo: String
     var color: String
     var limiteCredito: Double
+    var nip: String
+    var diaDeCorte: Int
+    var creditoUsado: Int
+    
+    //relaciones
+    @Relationship(deleteRule: .cascade) var compras: [Compra] = []
     
     //contructor
-    init(banco: String, ultimosDigitos: String, tipo: String, color: String, limiteCrdito: Double){
+    init(banco: String, ultimosDigitos: String, tipo: String, color: String, limiteCrdito: Double, nip: String, diaDeCorte: Int, creditoUsado: Int){
+        self.id = UUID() // Inicializamos el ID único
         self.banco = banco
         self.tipo = tipo
         self.color = color
         self.ultimosDigitos = ultimosDigitos
         self.limiteCredito = limiteCrdito
+        self.nip = nip
+        self.creditoUsado = creditoUsado
+        self.diaDeCorte = diaDeCorte
     }
     
     var nombreLogo: String {
@@ -35,7 +49,7 @@ class Tarjeta {
             case "american express":
                 return "American-Express-Logo"
             default:
-                return "gh" // Retorna vacío si es otro tipo
+                return "" // Retorna vacío si es otro tipo
             }
         }
 }
