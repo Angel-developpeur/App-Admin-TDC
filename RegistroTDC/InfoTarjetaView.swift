@@ -1,8 +1,8 @@
 //
-//  RegistroTDCApp.swift
+//  InfoTarjeta.swift
 //  RegistroTDC
 //
-//  Created by angel hernandez on 05/06/26.
+//  Created by angel hernandez on 16/06/26.
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -20,15 +20,15 @@
 import SwiftUI
 import SwiftData
 
-@main
-struct RegistroTDCApp: App {
-    var body: some Scene {
-        WindowGroup {
-            PantallaBloqueoView(razon: "Desbloquea para acceder a tus tarjetas") {
-                ContentView()
-            }
-        }
-        //permitimos que toda la aplicacion tenga acceso al modelo
-        .modelContainer(for: [Tarjeta.self, Compra.self])
+
+struct InfoTarjetaView: View {
+    
+    let tarjeta: Tarjeta
+    
+    var body: some View {
+            Text(String(tarjeta.nip.reversed()))
+                .navigationTitle("Info")
+        
     }
 }
+

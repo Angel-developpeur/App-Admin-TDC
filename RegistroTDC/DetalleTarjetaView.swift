@@ -4,7 +4,19 @@
 //
 //  Created by angel hernandez on 10/06/26.
 //
-
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
 import SwiftUI
 import SwiftData
 
@@ -66,7 +78,9 @@ struct DetalleTarjetaView: View {
             // SECCIÓN 2: Información/Configuración de la tarjeta
             Section {
                 NavigationLink {
-                    PantallaBloqueoNip(tarjeta: tarjeta)
+                    PantallaBloqueoView(razon: "Desbloquea para ver el NIP") {
+                        InfoTarjetaView(tarjeta: tarjeta)
+                    }
                 } label: {
                     HStack(spacing: 12) {
                         Image(systemName: "creditcard") // Un icono le da un toque más pro

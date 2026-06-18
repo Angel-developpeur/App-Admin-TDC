@@ -1,308 +1,49 @@
-//Este archivo esta protegido por la licencia GPL, 2026
+//
+//  ContentView.swift
+//  RegistroTDC
+//
+//  Created by angel hernandez on 18/06/26.
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
 
 import SwiftUI
 import SwiftData
-import Charts
 
 struct ContentView: View {
-    //Las varibles de estado se pone fuera del body
-    @State private var mostrarFormulario = false //indica si se muestra el formulario de creacion de una tarjeta
-    
-    @Query var tarjetas: [Tarjeta] //listad de tarjetas almacenadas
-    
-   
     var body: some View {
-        //menu de opciones
-        TabView{
-            //pestaña uno
-            NavigationStack {
-                ZStack {
-                    Color(uiColor: .systemGroupedBackground).ignoresSafeArea()
-                    ScrollView{
-                        VStack{
-                            if tarjetas.isEmpty {
-                                //si no hay tarjetas mostrar un mensaje
-                                ContentUnavailableView(
-                                    "Sin Tarjetas",
-                                    systemImage: "creditcard.and.123",
-                                    description: Text("Toca el botón + para registrar tu primera tarjeta.")
-                                )
-                            } else {
-                                ForEach(tarjetas) { tarjeta in
-                                    
-                                    NavigationLink{
-                                    
-                                        DetalleTarjetaView(tarjeta: tarjeta) //indicar a que vista nos vomeros a si como enviarle datos
-                                    } label: {
-                                        let colorFondo = Color(hex: tarjeta.color)
-                                        HStack{
-                                            VStack(alignment: .leading, spacing: 8){
-                                                Text(tarjeta.banco).font(.headline)
-                                                // ¡EL CAMBIO MÁGICO AQUÍ!
-                                                    if tarjeta.nombreLogo.isEmpty {
-                                                        // Si no hay logo para este tipo, mostramos el texto como antes
-                                                        Text(tarjeta.tipo)
-                                                            .font(.subheadline)
-                                                            .opacity(0.8)
-                                                    } else {
-                                                        // Si tenemos el logo, lo pintamos
-                                                        Image(tarjeta.nombreLogo)
-                                                            .resizable()
-                                                            .scaledToFit()
-                                                            .frame(height: 20) // Altura fija para mantener el diseño consistente
-                                                    }
-                                            }
-                                            Spacer()
-                                            Text("•••• \(tarjeta.ultimosDigitos)").font(.system(.body, design:.monospaced))
-                                        }
-                                        // SOLUCIÓN 2: Forzar todo el texto interno a blanco
-                                        .foregroundStyle(colorFondo.textoIdeal)
-                                            
-                                        .padding(20)
-                                        
-                                        // 3. Pintamos el fondo
-                                        .background(colorFondo)
-                                        
-                                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                                    }.buttonStyle(.plain)
-                                    
-                                   
-                                    
-                                }
-                            }
-                        }
-                        .padding(.horizontal)
-                        .padding(.top, 10)
+        // Menú de opciones principal
+        TabView {
+            // Pestaña 1: Listado de Tarjetas
+            TarjetasView()
+                .tabItem {
+                    Label("Tarjetas", systemImage: "creditcard")
                 }
-                
-                 // 2. Este es el contenido de tu pantalla actual
-                
-                }
-                 // 3. ¡AQUÍ ESTÁ EL TRUCO! Los modificadores van en el contenido interno, no en el stack
-                .navigationTitle("Mis Tarjetas")
-                 .toolbar {
-                     ToolbarItem(placement: .topBarTrailing) {
-                         // 4. Sintaxis correcta del Botón: Acción y Etiqueta (Label)
-                         Button {
-                             //activamos el estado de muestra a true
-                             mostrarFormulario = true
-                         } label: {
-                             Image(systemName: "plus")
-                         }
-                     }
-                 }
-                //agrega sheet para el formulario
-                 .sheet(isPresented: $mostrarFormulario) {
-                    //llamar a la vista del formulario
-                     FormularioTarjetaView()
-                }
-             }//cierre del navigation stack
-            .tabItem { //indicamos que este fragmento de codigo sera una pestana en la lista de opciones, con dicho nombre y icono
-                 Label("Tarjetas", systemImage: "creditcard")
-             }// Fin del NavigationStack
-            .tag(1) // con tag le indicamos que este es la opcion 1
+                .tag(1)
             
-            //un texto sera la visa dos
-            VStack(spacing: 35){
-                var totalDeuda: Int {
-                    var suma = 0
-                    for tarjeta in tarjetas {
-                        for compra in tarjeta.compras {
-                            suma += compra.monto
-                        }
-                    }
-                    return suma
+            // Pestaña 2: Gráficas e información de Deuda
+            DeudaView()
+                .tabItem {
+                    Label("Deuda", systemImage: "dollarsign")
                 }
-                VStack(spacing: 8) {
-                    Text("Deuda Total")
-                        .font(.headline)
-                        .foregroundStyle(.secondary)
-                    
-                    Text(totalDeuda, format: .currency(code: "MXN"))
-                        // Usamos un tamaño masivo y fuente redondeada estilo Apple Wallet
-                        .font(.system(size: 46, weight: .bold, design: .rounded))
-                        // Si no hay deuda, se pinta verde, si hay, se pinta el color primario (negro/blanco)
-                        .foregroundStyle(totalDeuda == 0 ? .green : .primary)
-                }//fin del vstack
-                .padding(.top, 20)
-                
-                if totalDeuda > 0 {
-                    Chart(tarjetas) { tarjeta in
-                        let deudaDeEstaTarjeta = calcularDeuda(de: tarjeta)
-                        
-                        // SectorMark es el componente para gráficas de pastel/dona
-                        SectorMark(
-                            angle: .value("Deuda", deudaDeEstaTarjeta),
-                            innerRadius: .ratio(0.65), // Esto hace el hueco del centro (dona)
-                            angularInset: 2.0 // Esto separa las rebanadas ligeramente
-                        )
-                        // ¡Magia UX! Pintamos la rebanada del mismo color que la tarjeta física
-                        .foregroundStyle(Color(hex: tarjeta.color))
-                        .cornerRadius(4)
-                    }
-                    // Forzamos la altura de la gráfica
-                    .frame(height: 220)
-                    .padding(.horizontal)
-                } else {
-                    // Estado vacío elegante si no hay deudas
-                    ContentUnavailableView(
-                        "Todo al corriente",
-                        systemImage: "checkmark.seal.fill",
-                        description: Text("No tienes deudas registradas en tus tarjetas.")
-                    )
-                }//fin del if else
-                
-                
-                if totalDeuda > 0 {
-                    VStack(alignment: .leading, spacing: 15) {
-                        Text("Desglose")
-                            .font(.title3.bold())
-                            .padding(.horizontal)
-                        
-                        // Una lista limpia con el detalle de cada tarjeta
-                        VStack(spacing: 0) {
-                            ForEach(tarjetas) { tarjeta in
-                                let deudaTarjeta = calcularDeuda(de: tarjeta)
-                                
-                                if deudaTarjeta > 0 {
-                                    HStack {
-                                        // Circulito del color de la tarjeta
-                                        Circle()
-                                            .fill(Color(hex: tarjeta.color))
-                                            .frame(width: 12, height: 12)
-                                        
-                                        Text(tarjeta.banco)
-                                            .font(.body)
-                                        
-                                        Spacer()
-                                        
-                                        Text(deudaTarjeta, format: .currency(code: "MXN"))
-                                            .bold()
-                                    }//fin del hstacl
-                                    .padding()
-                                    Divider() // Línea separadora
-                                }//fin del ig
-                            }//fin del foreach
-                        }//fin del vstack
-                        .background(Color(uiColor: .secondarySystemGroupedBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .padding(.horizontal)
-                    }//fin del vstack
-                }//fin del if
-                
-                
-            }//fin del vstal
-            .tabItem {
-                Label("Deuda", systemImage: "dollarsign")
-            }
-
-        }.tint(.blue)
-        // 1. El NavigationStack envuelve a toda la pantalla
-       
-    }
-       
-}
-
-func calcularDeuda(de tarjeta: Tarjeta) -> Double {
-        let acumulado = tarjeta.compras.reduce(0) { $0 + $1.monto }
-        return Double(acumulado) / 100.0
-    }
-
-// 5. Creamos una vista separada para mantener el código ordenado
-struct FormularioTarjetaView: View {
-    @Environment(\.dismiss) var dismiss
-    
-    //acceder al contexto de swiftData
-    @Environment(\.modelContext) private var modelContext
-    
-    // Variables de estado para capturar los datos
-    @State private var banco = ""
-    @State private var ultimosDigitos = ""
-    @State private var tipoSeleccionado = "Visa"
-    @State private var esPrincipal = false
-    @State private var limiteCredito: Double = 10000
-    @State private var colorDeTarjeta: Color = .blue
-    @State private var nip = ""
-    @State private var diaDeCorte: Int = 0
-    @State private var creditoUsado = ""
-    
-    let tipos = ["Visa", "MasterCard", "American Express"]
-    
-    // Esta variable será 'true' solo si el banco no está vacío
-    // y si los últimos dígitos son exactamente 4.
-    var formularioEsValido: Bool {
-        !banco.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-        ultimosDigitos.count == 4 &&
-        !diaDeCorte.description.isEmpty &&
-        nip.trimmingCharacters(in: .whitespacesAndNewlines).count == 4
-        
-    }
-    
-    var body: some View {
-        NavigationStack {
-            Form {
-                Section(header: Text("Datos de Identificación")) {
-                    TextField("Nombre del Banco *", text: $banco)
-                    TextField("Últimos 4 dígitos *", text: $ultimosDigitos)
-                        .keyboardType(.numberPad)
-                    ColorPicker("Color de identificación", selection: $colorDeTarjeta)
-                }
-                
-                Section(header: Text("Configuración")) {
-                    Picker("Tipo", selection: $tipoSeleccionado) {
-                        ForEach(tipos, id: \.self) { Text($0).tag($0) }
-                    }
-                    Stepper("Límite: $\(limiteCredito, specifier: "%.0f")", value: $limiteCredito, step: 100)
-                    
-
-                    // Slider: Barra deslizable
-                    Slider(value: $limiteCredito, in: 3000...500000, step: 100)
-                    TextField("Credito usado", text: $creditoUsado).keyboardType(.numberPad)
-                    TextField("Nip", text: $nip).keyboardType(.numberPad)
-                    Picker("Día de corte", selection: $diaDeCorte) {
-                                            ForEach(1...31, id: \.self) { dia in
-                                                // El .tag() es crucial para que el Picker sepa qué valor asignar
-                                                Text("\(dia)").tag(dia)
-                                            }
-                                        }
-                                        // Opcional: Le da un estilo de menú desplegable nativo en iOS 16+
-                                        .pickerStyle(.menu)
-                }
-            }
-            .navigationTitle("Nueva Tarjeta")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancelar") { dismiss() }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Guardar") {
-                        // crear un obtjeto de tipo tarjeta
-                        let nuevaTarjeta = Tarjeta(
-                            banco: banco,
-                            ultimosDigitos: ultimosDigitos,
-                            tipo: tipoSeleccionado,
-                            color: colorDeTarjeta.toHex(),
-                            limiteCrdito: limiteCredito,
-                            nip: nip,
-                            diaDeCorte: diaDeCorte,
-                            creditoUsado: Int((Double(creditoUsado) ?? 0)) * 100,
-                            
-                        )
-                        //insertamo el objeto en la memoria local
-                        modelContext.insert(nuevaTarjeta)
-                        
-                        dismiss()
-                    }
-                    .bold()
-                    // Podemos deshabilitar el botón si no han llenado los datos
-                    .disabled(!formularioEsValido)
-                }
-            }
+                .tag(2)
         }
+        .tint(.blue)
     }
 }
 
 #Preview {
     ContentView()
+        .modelContainer(for: Tarjeta.self, inMemory: true)
 }

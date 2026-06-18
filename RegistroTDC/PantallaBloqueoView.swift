@@ -4,23 +4,43 @@
 //
 //  Created by angel hernandez on 13/06/26.
 //
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
 
 import SwiftUI
-// 1. IMPORTAMOS EL FRAMEWORK DE SEGURIDAD
 import LocalAuthentication
 
-struct PantallaBloqueoView: View {
+struct PantallaBloqueoView<Content: View>: View {
+    // La razón por la que se solicita la autenticación biométrica
+    let razon: String
+    // La vista destino que se desbloquea
+    let contenidoDestino: Content
+    
     // Variable de estado que controla si la app está abierta o cerrada
     @State private var estaDesbloqueado = false
     @State private var mensajeError = ""
     
+    // Inicializador genérico para admitir una sintaxis declarativa limpia
+    init(razon: String = "Desbloquea para continuar", @ViewBuilder contenidoDestino: () -> Content) {
+        self.razon = razon
+        self.contenidoDestino = contenidoDestino()
+    }
+    
     var body: some View {
-        // Si ya se desbloqueó, mostramos tu aplicación real
         if estaDesbloqueado {
-            // Aquí llamas a la vista principal que ya tienes
-            ContentView()
+            contenidoDestino
         } else {
-            // Si está bloqueado, mostramos la pantalla de seguridad
             VStack(spacing: 20) {
                 Image(systemName: "lock.shield.fill")
                     .font(.system(size: 80))
@@ -29,7 +49,7 @@ struct PantallaBloqueoView: View {
                 Text("Registro TDC Protegido")
                     .font(.title2.bold())
                 
-                Text("Usa tu biometría para acceder a tus tarjetas")
+                Text("Usa tu biometría para acceder")
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
@@ -53,7 +73,6 @@ struct PantallaBloqueoView: View {
                 }
                 .padding(.top, 10)
             }
-            // Ejecuta la autenticación automáticamente en cuanto aparece la pantalla
             .onAppear {
                 autenticar()
             }
@@ -62,24 +81,13 @@ struct PantallaBloqueoView: View {
     
     // --- LÓGICA DE AUTENTICACIÓN ---
     func autenticar() {
-        // 2. Creamos el contexto de autenticación
         let context = LAContext()
         var error: NSError?
         
-        // 3. Verificamos si el dispositivo tiene Face ID o Touch ID configurado
         if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-            
-            // Razón que le aparecerá al usuario en el diálogo de TouchID (FaceID usa el del Info.plist)
-            let razon = "Desbloquea para acceder a tus tarjetas."
-            
-            // 4. Lanzamos la petición de escanear la cara/huella
             context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: razon) { exito, errorAutenticacion in
-                
-                // IMPORTANTE: Como esto se ejecuta en segundo plano, debemos
-                // actualizar las variables de estado en el hilo principal (Main)
                 DispatchQueue.main.async {
                     if exito {
-                        // ¡Éxito! Abrimos la puerta
                         withAnimation {
                             estaDesbloqueado = true
                         }
@@ -89,11 +97,7 @@ struct PantallaBloqueoView: View {
                 }
             }
         } else {
-            // El dispositivo no tiene FaceID/TouchID o no está configurado
             mensajeError = "Este dispositivo no soporta biometría."
-            
-            // Tip de UX: Aquí podrías activar un fallback (.deviceOwnerAuthentication)
-            // para pedir el PIN numérico del teléfono en su lugar.
         }
     }
 }
