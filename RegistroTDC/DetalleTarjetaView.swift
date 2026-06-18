@@ -66,8 +66,7 @@ struct DetalleTarjetaView: View {
             // SECCIÓN 2: Información/Configuración de la tarjeta
             Section {
                 NavigationLink {
-                    Text("Esta es la pantalla de 'About' con más información.")
-                        .navigationTitle("About")
+                    PantallaBloqueoNip(tarjeta: tarjeta)
                 } label: {
                     HStack(spacing: 12) {
                         Image(systemName: "creditcard") // Un icono le da un toque más pro
@@ -76,6 +75,7 @@ struct DetalleTarjetaView: View {
                             .font(.body)
                     }
                 }
+                
             }
             
             // SECCIÓN 3: Historial de compras

@@ -2,6 +2,7 @@
 
 import SwiftUI
 import SwiftData
+import Charts
 
 struct ContentView: View {
     //Las varibles de estado se pone fuera del body
@@ -102,7 +103,7 @@ struct ContentView: View {
             .tag(1) // con tag le indicamos que este es la opcion 1
             
             //un texto sera la visa dos
-            VStack{
+            VStack(spacing: 35){
                 var totalDeuda: Int {
                     var suma = 0
                     for tarjeta in tarjetas {
@@ -112,7 +113,84 @@ struct ContentView: View {
                     }
                     return suma
                 }
-                Text("Deuda total de todas las compras : " + String(totalDeuda))
+                VStack(spacing: 8) {
+                    Text("Deuda Total")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                    
+                    Text(totalDeuda, format: .currency(code: "MXN"))
+                        // Usamos un tamaño masivo y fuente redondeada estilo Apple Wallet
+                        .font(.system(size: 46, weight: .bold, design: .rounded))
+                        // Si no hay deuda, se pinta verde, si hay, se pinta el color primario (negro/blanco)
+                        .foregroundStyle(totalDeuda == 0 ? .green : .primary)
+                }//fin del vstack
+                .padding(.top, 20)
+                
+                if totalDeuda > 0 {
+                    Chart(tarjetas) { tarjeta in
+                        let deudaDeEstaTarjeta = calcularDeuda(de: tarjeta)
+                        
+                        // SectorMark es el componente para gráficas de pastel/dona
+                        SectorMark(
+                            angle: .value("Deuda", deudaDeEstaTarjeta),
+                            innerRadius: .ratio(0.65), // Esto hace el hueco del centro (dona)
+                            angularInset: 2.0 // Esto separa las rebanadas ligeramente
+                        )
+                        // ¡Magia UX! Pintamos la rebanada del mismo color que la tarjeta física
+                        .foregroundStyle(Color(hex: tarjeta.color))
+                        .cornerRadius(4)
+                    }
+                    // Forzamos la altura de la gráfica
+                    .frame(height: 220)
+                    .padding(.horizontal)
+                } else {
+                    // Estado vacío elegante si no hay deudas
+                    ContentUnavailableView(
+                        "Todo al corriente",
+                        systemImage: "checkmark.seal.fill",
+                        description: Text("No tienes deudas registradas en tus tarjetas.")
+                    )
+                }//fin del if else
+                
+                
+                if totalDeuda > 0 {
+                    VStack(alignment: .leading, spacing: 15) {
+                        Text("Desglose")
+                            .font(.title3.bold())
+                            .padding(.horizontal)
+                        
+                        // Una lista limpia con el detalle de cada tarjeta
+                        VStack(spacing: 0) {
+                            ForEach(tarjetas) { tarjeta in
+                                let deudaTarjeta = calcularDeuda(de: tarjeta)
+                                
+                                if deudaTarjeta > 0 {
+                                    HStack {
+                                        // Circulito del color de la tarjeta
+                                        Circle()
+                                            .fill(Color(hex: tarjeta.color))
+                                            .frame(width: 12, height: 12)
+                                        
+                                        Text(tarjeta.banco)
+                                            .font(.body)
+                                        
+                                        Spacer()
+                                        
+                                        Text(deudaTarjeta, format: .currency(code: "MXN"))
+                                            .bold()
+                                    }//fin del hstacl
+                                    .padding()
+                                    Divider() // Línea separadora
+                                }//fin del ig
+                            }//fin del foreach
+                        }//fin del vstack
+                        .background(Color(uiColor: .secondarySystemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .padding(.horizontal)
+                    }//fin del vstack
+                }//fin del if
+                
+                
             }//fin del vstal
             .tabItem {
                 Label("Deuda", systemImage: "dollarsign")
@@ -124,6 +202,11 @@ struct ContentView: View {
     }
        
 }
+
+func calcularDeuda(de tarjeta: Tarjeta) -> Double {
+        let acumulado = tarjeta.compras.reduce(0) { $0 + $1.monto }
+        return Double(acumulado) / 100.0
+    }
 
 // 5. Creamos una vista separada para mantener el código ordenado
 struct FormularioTarjetaView: View {
@@ -173,9 +256,9 @@ struct FormularioTarjetaView: View {
                     
 
                     // Slider: Barra deslizable
-                    Slider(value: $limiteCredito, in: 3000...50000, step: 100)
+                    Slider(value: $limiteCredito, in: 3000...500000, step: 100)
                     TextField("Credito usado", text: $creditoUsado).keyboardType(.numberPad)
-                    TextField("Nip", text: $nip)
+                    TextField("Nip", text: $nip).keyboardType(.numberPad)
                     Picker("Día de corte", selection: $diaDeCorte) {
                                             ForEach(1...31, id: \.self) { dia in
                                                 // El .tag() es crucial para que el Picker sepa qué valor asignar
