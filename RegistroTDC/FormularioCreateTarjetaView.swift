@@ -21,7 +21,7 @@
 import SwiftUI
 import SwiftData
 
-struct FormularioTarjetaView: View {
+struct FormularioCreateTarjetaView: View {
     @Environment(\.dismiss) var dismiss
     
     // Acceder al contexto de SwiftData
@@ -90,7 +90,7 @@ struct FormularioTarjetaView: View {
                             ultimosDigitos: ultimosDigitos,
                             tipo: tipoSeleccionado,
                             color: colorDeTarjeta.toHex(),
-                            limiteCrdito: limiteCredito,
+                            limiteCrdito: Int(limiteCredito) * 100,
                             nip: nip,
                             diaDeCorte: diaDeCorte,
                             creditoUsado: Int((Double(creditoUsado) ?? 0)) * 100
@@ -109,6 +109,6 @@ struct FormularioTarjetaView: View {
 }
 
 #Preview {
-    FormularioTarjetaView()
+    FormularioCreateTarjetaView()
         .modelContainer(for: Tarjeta.self, inMemory: true)
 }

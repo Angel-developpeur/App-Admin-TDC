@@ -44,12 +44,12 @@ struct PantallaBloqueoView<Content: View>: View {
             VStack(spacing: 20) {
                 Image(systemName: "lock.shield.fill")
                     .font(.system(size: 80))
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(.primary)
                 
-                Text("Registro TDC Protegido")
+                Text("Acceso Restringido")
                     .font(.title2.bold())
                 
-                Text("Usa tu biometría para acceder")
+                Text("Usa FaceID para acceder")
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
@@ -65,10 +65,10 @@ struct PantallaBloqueoView<Content: View>: View {
                 } label: {
                     Label("Desbloquear", systemImage: "faceid")
                         .font(.headline)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color(uiColor: .systemBackground))
                         .padding()
                         .frame(maxWidth: 200)
-                        .background(Color.blue)
+                        .background(Color.primary)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
                 .padding(.top, 10)

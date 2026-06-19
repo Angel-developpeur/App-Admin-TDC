@@ -37,21 +37,22 @@ struct DeudaView: View {
     }
     
     var body: some View {
+        let sumaDeuda = totalDeuda
         VStack(spacing: 35) {
             VStack(spacing: 8) {
                 Text("Deuda Total")
                     .font(.headline)
                     .foregroundStyle(.secondary)
                 
-                Text(totalDeuda, format: .currency(code: "MXN"))
+                Text(Double(sumaDeuda) / 100.0, format: .currency(code: "MXN"))
                     // Usamos un tamaño masivo y fuente redondeada estilo Apple Wallet
                     .font(.system(size: 46, weight: .bold, design: .rounded))
                     // Si no hay deuda, se pinta verde, si hay, se pinta el color primario (negro/blanco)
-                    .foregroundStyle(totalDeuda == 0 ? .green : .primary)
+                    .foregroundStyle(sumaDeuda == 0 ? .green : .primary)
             } // fin del vstack
             .padding(.top, 20)
             
-            if totalDeuda > 0 {
+            if sumaDeuda > 0 {
                 Chart(tarjetas) { tarjeta in
                     let deudaDeEstaTarjeta = calcularDeuda(de: tarjeta)
                     
@@ -77,7 +78,7 @@ struct DeudaView: View {
                 )
             } // fin del if else
             
-            if totalDeuda > 0 {
+            if sumaDeuda > 0 {
                 VStack(alignment: .leading, spacing: 15) {
                     Text("Desglose")
                         .font(.title3.bold())

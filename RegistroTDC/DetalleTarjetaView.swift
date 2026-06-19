@@ -33,6 +33,7 @@ struct DetalleTarjetaView: View {
     
     
     var body: some View {
+        let sumaCompras = totalCompras
         // Eliminamos los VStacks exteriores y usamos una sola List nativa
         List {
             
@@ -46,14 +47,15 @@ struct DetalleTarjetaView: View {
                         Text("Deuda Total")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
-                        Text(totalCompras, format: .currency(code: "MXN"))
+                        Text(sumaCompras, format: .currency(code: "MXN"))
                             .font(.largeTitle)
                             .bold()
                     }
                     
                     // --- PARTE INFERIOR: BARRA HORIZONTAL ---
                     // 2. ¡MUY IMPORTANTE! Agregamos el 'in: 0...tarjeta.limiteCredito'
-                    Gauge(value: totalCompras, in: 0...tarjeta.limiteCredito) {
+                    let limiteReal = Double(tarjeta.limiteCredito) / 100.0
+                    Gauge(value: sumaCompras, in: 0...limiteReal) {
                         Text("Límite de crédito")
                             .font(.caption)
                     } currentValueLabel: {
@@ -64,7 +66,7 @@ struct DetalleTarjetaView: View {
                             .foregroundStyle(.secondary)
                     } maximumValueLabel: {
                         // Formato de moneda para el límite (evita que se vea como 24300.0)
-                        Text(tarjeta.limiteCredito, format: .currency(code: "MXN"))
+                        Text(limiteReal, format: .currency(code: "MXN"))
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                     }
@@ -79,7 +81,7 @@ struct DetalleTarjetaView: View {
             Section {
                 NavigationLink {
                     PantallaBloqueoView(razon: "Desbloquea para ver el NIP") {
-                        InfoTarjetaView(tarjeta: tarjeta)
+                        NipView(tarjeta: tarjeta)
                     }
                 } label: {
                     HStack(spacing: 12) {
@@ -195,6 +197,9 @@ struct FormularioCompraView: View {
                         )
                         
                         nuevaCompra.tarjeta = tarjeta
+                        // Actualizar el crédito usado de la tarjeta
+                        tarjeta.creditoUsado += monto_format
+                        
                         //insertamo el objeto en la memoria local
                         modelContext.insert(nuevaCompra)
                         

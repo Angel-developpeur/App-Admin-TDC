@@ -30,7 +30,7 @@ struct TarjetasView: View {
             ZStack {
                 Color(uiColor: .systemGroupedBackground).ignoresSafeArea()
                 ScrollView {
-                    VStack {
+                    LazyVStack {
                         if tarjetas.isEmpty {
                             // Si no hay tarjetas, mostrar un mensaje de estado vacío
                             ContentUnavailableView(
@@ -86,7 +86,7 @@ struct TarjetasView: View {
                 }
             }
             .sheet(isPresented: $mostrarFormulario) {
-                FormularioTarjetaView()
+                FormularioCreateTarjetaView()
             }
         }
     }
