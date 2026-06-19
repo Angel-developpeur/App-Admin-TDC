@@ -68,7 +68,7 @@ struct FormularioCreateTarjetaView: View {
                     
                     // Slider: Barra deslizable
                     Slider(value: $limiteCredito, in: 3000...500000, step: 100)
-                    TextField("Credito usado", text: $creditoUsado).keyboardType(.numberPad)
+                    TextField("Credito usado", text: $creditoUsado).keyboardType(.decimalPad)
                     TextField("Nip", text: $nip).keyboardType(.numberPad)
                     Picker("Día de corte", selection: $diaDeCorte) {
                         ForEach(1...31, id: \.self) { dia in
@@ -86,6 +86,11 @@ struct FormularioCreateTarjetaView: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Guardar") {
+                        // Sanitizar el string de crédito usado para soportar comas decimales
+                        let creditoSanitizado = creditoUsado.replacingOccurrences(of: ",", with: ".")
+                        let creditoDouble = Double(creditoSanitizado) ?? 0.0
+                        let creditoCentavos = Int(round(creditoDouble * 100.0))
+                        
                         // Crear un objeto de tipo tarjeta
                         let nuevaTarjeta = Tarjeta(
                             banco: banco,
@@ -95,7 +100,7 @@ struct FormularioCreateTarjetaView: View {
                             limiteCrdito: Int(limiteCredito) * 100,
                             nip: nip,
                             diaDeCorte: diaDeCorte,
-                            creditoUsado: Int((Double(creditoUsado) ?? 0)) * 100
+                            creditoUsado: creditoCentavos
                         )
                         // Insertamos el objeto en SwiftData
                         modelContext.insert(nuevaTarjeta)

@@ -22,24 +22,19 @@ import SwiftData
 
 struct DetalleTarjetaView: View {
     let tarjeta: Tarjeta
-    @State private var mostrarFormulario = false
+    @State private var mostrarFormularioCompra = false
+    @State private var mostrarFormularioPago = false
     
     var totalCompras: Double {
-        // Hacemos la matemática directamente devolviendo el Double listo para mostrar
-        let acumulado = tarjeta.compras.reduce(0) { $0 + $1.monto }
-        return Double(acumulado) / 100.0
+        return Double(tarjeta.creditoUsado) / 100.0
     }
-    
-    
     
     var body: some View {
         let sumaCompras = totalCompras
-        // Eliminamos los VStacks exteriores y usamos una sola List nativa
         List {
             
             // SECCIÓN 1: Deuda Total (Header destacado)
             Section {
-                // 1. Usamos un VStack principal para que todo vaya de arriba hacia abajo
                 VStack(spacing: 20) {
                     
                     // --- PARTE SUPERIOR: TEXTOS DE DEUDA ---
@@ -53,25 +48,60 @@ struct DetalleTarjetaView: View {
                     }
                     
                     // --- PARTE INFERIOR: BARRA HORIZONTAL ---
-                    // 2. ¡MUY IMPORTANTE! Agregamos el 'in: 0...tarjeta.limiteCredito'
                     let limiteReal = Double(tarjeta.limiteCredito) / 100.0
                     Gauge(value: sumaCompras, in: 0...limiteReal) {
                         Text("Límite de crédito")
                             .font(.caption)
                     } currentValueLabel: {
-                        EmptyView() // Lo dejamos vacío porque el total ya está en grande arriba
+                        EmptyView()
                     } minimumValueLabel: {
-                        Text(0, format: .currency(code: "MXN")) // Formato de moneda para el 0
+                        Text(0, format: .currency(code: "MXN"))
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                     } maximumValueLabel: {
-                        // Formato de moneda para el límite (evita que se vea como 24300.0)
                         Text(limiteReal, format: .currency(code: "MXN"))
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                     }
-                    // Opcional: Le regresamos el gradiente de colores para que se vea más pro
                     .tint(Gradient(colors: [.green, .yellow, .red]))
+                    
+                    // --- BOTONES DE ACCIÓN RÁPIDA ---
+                    HStack(spacing: 12) {
+                        Button {
+                            mostrarFormularioCompra = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "plus.circle.fill")
+                                Text("Registrar Compra")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(Color.blue.opacity(0.15))
+                            .foregroundColor(.blue)
+                            .cornerRadius(10)
+                        }
+                        .buttonStyle(.plain)
+                        
+                        Button {
+                            mostrarFormularioPago = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "checkmark.circle.fill")
+                                Text("Pagar Tarjeta")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(Color.green.opacity(0.15))
+                            .foregroundColor(.green)
+                            .cornerRadius(10)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .padding(.top, 4)
                 }
                 .padding(.vertical, 8)
             }
@@ -85,27 +115,25 @@ struct DetalleTarjetaView: View {
                     }
                 } label: {
                     HStack(spacing: 12) {
-                        Image(systemName: "creditcard") // Un icono le da un toque más pro
+                        Image(systemName: "creditcard")
                             .foregroundStyle(.blue)
                         Text("Información de la tarjeta")
                             .font(.body)
                     }
                 }
-                
             }
             
-            // SECCIÓN 3: Historial de compras
-            Section(header: Text("Historial de Compras")) {
+            // SECCIÓN 3: Historial de movimientos
+            Section(header: Text("Historial de Movimientos")) {
                 if tarjeta.compras.isEmpty {
-                    // Si está vacío, mostramos un aviso limpio dentro de la fila
                     ContentUnavailableView(
-                        "Sin compras",
+                        "Sin movimientos",
                         systemImage: "bag",
                         description: Text("No has registrado ningún movimiento.")
                     )
                     .listRowBackground(Color.clear)
                 } else {
-                    ForEach(tarjeta.compras) { compra in
+                    ForEach(tarjeta.compras.sorted(by: { $0.fecha > $1.fecha })) { compra in
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(compra.descripcion)
@@ -121,34 +149,44 @@ struct DetalleTarjetaView: View {
                             let montoReal = Double(compra.monto) / 100.0
                             Text(montoReal, format: .currency(code: "MXN"))
                                 .bold()
+                                .foregroundColor(compra.monto < 0 ? .green : .primary)
                         }
                         .padding(.vertical, 4)
                     }
                 }
             }
         }
-        // Puedes cambiar el estilo de la lista si quieres experimentar (.insetGrouped es el clásico de Ajustes de iOS)
         .listStyle(.insetGrouped)
-        .navigationTitle("Compras")
+        .navigationTitle("Detalles")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    mostrarFormulario = true
+                Menu {
+                    Button {
+                        mostrarFormularioCompra = true
+                    } label: {
+                        Label("Registrar Compra", systemImage: "plus.circle")
+                    }
+                    Button {
+                        mostrarFormularioPago = true
+                    } label: {
+                        Label("Registrar Pago", systemImage: "checkmark.circle")
+                    }
                 } label: {
-                    Image(systemName: "plus")
+                    Image(systemName: "ellipsis.circle")
                 }
             }
         }
-        .sheet(isPresented: $mostrarFormulario) {
+        .sheet(isPresented: $mostrarFormularioCompra) {
             FormularioCompraView(tarjeta: tarjeta)
+        }
+        .sheet(isPresented: $mostrarFormularioPago) {
+            FormularioPagoView(tarjeta: tarjeta)
         }
     }
 }
 
 struct FormularioCompraView: View {
     @Environment(\.dismiss) var dismiss
-    
-    //acceder al contexto de swiftData
     @Environment(\.modelContext) private var modelContext
     
     let tarjeta: Tarjeta
@@ -157,39 +195,33 @@ struct FormularioCompraView: View {
     @State private var monto = ""
     @State private var meses_sin_intereses = ""
     
-    //validar que se ingresara una descripcion y un monto
-    var formularioEsValido:Bool{
+    var formularioEsValido: Bool {
         !descripcion.isEmpty && !monto.isEmpty
     }
     
-    
-    
     var body: some View {
         NavigationStack {
-            //formulario de registro
             Form {
                 Section(header: Text("Datos de compra")) {
-                    TextField("Descripcion", text: $descripcion)
+                    TextField("Descripción", text: $descripcion)
                     TextField("Monto", text: $monto)
-                        .keyboardType(.numberPad)
+                        .keyboardType(.decimalPad)
                     TextField("Meses sin intereses", text: $meses_sin_intereses)
                         .keyboardType(.numberPad)
-                }//fin de la seccion
-                
-               
-            }//fin del formulario de registro
+                }
+            }
             .navigationTitle("Registrar Compra")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                //boton de cancelar
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancelar") { dismiss() }
                 }
-                //boton de guardar
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Guardar") {
-                        let monto_format = Int( (Double(monto) ?? 0) * 100)
-                        // crear un obtjeto de tipo tarjeta
+                        let montoSanitizado = monto.replacingOccurrences(of: ",", with: ".")
+                        let montoDouble = Double(montoSanitizado) ?? 0.0
+                        let monto_format = Int(round(montoDouble * 100.0))
+                        
                         let nuevaCompra = Compra(
                             monto: monto_format,
                             descripcion: descripcion,
@@ -197,18 +229,69 @@ struct FormularioCompraView: View {
                         )
                         
                         nuevaCompra.tarjeta = tarjeta
-                        // Actualizar el crédito usado de la tarjeta
                         tarjeta.creditoUsado += monto_format
                         
-                        //insertamo el objeto en la memoria local
                         modelContext.insert(nuevaCompra)
-                        
                         dismiss()
-                        
-                       
                     }
                     .bold()
-                    // Podemos deshabilitar el botón si no han llenado los datos
+                    .disabled(!formularioEsValido)
+                }
+            }
+        }
+    }
+}
+
+struct FormularioPagoView: View {
+    @Environment(\.dismiss) var dismiss
+    @Environment(\.modelContext) private var modelContext
+    
+    let tarjeta: Tarjeta
+    
+    @State private var descripcion = String(localized: "Pago de tarjeta")
+    @State private var monto = ""
+    @State private var fecha = Date()
+    
+    var formularioEsValido: Bool {
+        !descripcion.isEmpty && !monto.isEmpty
+    }
+    
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section(header: Text("Datos del pago")) {
+                    TextField("Descripción", text: $descripcion)
+                    TextField("Monto", text: $monto)
+                        .keyboardType(.decimalPad)
+                    DatePicker("Fecha", selection: $fecha, displayedComponents: .date)
+                }
+            }
+            .navigationTitle("Registrar Pago")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Cancelar") { dismiss() }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Guardar") {
+                        let montoSanitizado = monto.replacingOccurrences(of: ",", with: ".")
+                        let montoDouble = Double(montoSanitizado) ?? 0.0
+                        let montoCentavos = Int(round(montoDouble * 100.0))
+                        
+                        let nuevoPago = Compra(
+                            monto: -montoCentavos,
+                            descripcion: descripcion,
+                            meses_sin_intereses: 0,
+                            fecha: fecha
+                        )
+                        
+                        nuevoPago.tarjeta = tarjeta
+                        tarjeta.creditoUsado -= montoCentavos
+                        
+                        modelContext.insert(nuevoPago)
+                        dismiss()
+                    }
+                    .bold()
                     .disabled(!formularioEsValido)
                 }
             }

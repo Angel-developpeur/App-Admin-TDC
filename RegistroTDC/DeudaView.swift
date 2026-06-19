@@ -27,13 +27,7 @@ struct DeudaView: View {
     
     // Deuda acumulada calculada de todas las tarjetas
     var totalDeuda: Int {
-        var suma = 0
-        for tarjeta in tarjetas {
-            for compra in tarjeta.compras {
-                suma += compra.monto
-            }
-        }
-        return suma
+        return tarjetas.reduce(0) { $0 + $1.creditoUsado }
     }
     
     var body: some View {
@@ -119,8 +113,7 @@ struct DeudaView: View {
     
     // Método auxiliar para obtener la deuda en formato Double
     func calcularDeuda(de tarjeta: Tarjeta) -> Double {
-        let acumulado = tarjeta.compras.reduce(0) { $0 + $1.monto }
-        return Double(acumulado) / 100.0
+        return Double(tarjeta.creditoUsado) / 100.0
     }
 }
 

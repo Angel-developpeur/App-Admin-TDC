@@ -41,6 +41,7 @@
       }
     },
     "Compras" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -100,6 +101,9 @@
         }
       }
     },
+    "Datos del pago" : {
+
+    },
     "Desbloquea para acceder a tus tarjetas" : {
       "localizations" : {
         "en" : {
@@ -131,6 +135,7 @@
       }
     },
     "Descripcion" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -139,6 +144,9 @@
           }
         }
       }
+    },
+    "Descripción" : {
+
     },
     "Desglose" : {
       "localizations" : {
@@ -149,6 +157,9 @@
           }
         }
       }
+    },
+    "Detalles" : {
+
     },
     "Deuda" : {
       "localizations" : {
@@ -193,6 +204,9 @@
         }
       }
     },
+    "Fecha" : {
+
+    },
     "Guardar" : {
       "localizations" : {
         "en" : {
@@ -204,6 +218,7 @@
       }
     },
     "Historial de Compras" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -212,6 +227,9 @@
           }
         }
       }
+    },
+    "Historial de Movimientos" : {
+
     },
     "Hoy es el día de corte de tu tarjeta que termina en %@." : {
 
@@ -386,6 +404,12 @@
         }
       }
     },
+    "Pagar Tarjeta" : {
+
+    },
+    "Pago de tarjeta" : {
+
+    },
     "Registrar Compra" : {
       "localizations" : {
         "en" : {
@@ -396,7 +420,11 @@
         }
       }
     },
+    "Registrar Pago" : {
+
+    },
     "Sin compras" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -405,6 +433,9 @@
           }
         }
       }
+    },
+    "Sin movimientos" : {
+
     },
     "Sin Tarjetas" : {
       "localizations" : {
