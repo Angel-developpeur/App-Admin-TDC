@@ -102,7 +102,14 @@
       }
     },
     "Datos del pago" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Payment Data"
+          }
+        }
+      }
     },
     "Desbloquea para acceder a tus tarjetas" : {
       "localizations" : {
@@ -146,7 +153,14 @@
       }
     },
     "Descripción" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Description"
+          }
+        }
+      }
     },
     "Desglose" : {
       "localizations" : {
@@ -159,7 +173,14 @@
       }
     },
     "Detalles" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Details"
+          }
+        }
+      }
     },
     "Deuda" : {
       "localizations" : {
@@ -192,7 +213,14 @@
       }
     },
     "Día de corte: %@" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ct-off day: %@"
+          }
+        }
+      }
     },
     "Este dispositivo no soporta biometría." : {
       "localizations" : {
@@ -205,7 +233,14 @@
       }
     },
     "Fecha" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date"
+          }
+        }
+      }
     },
     "Guardar" : {
       "localizations" : {
@@ -229,10 +264,24 @@
       }
     },
     "Historial de Movimientos" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Movement History"
+          }
+        }
+      }
     },
     "Hoy es el día de corte de tu tarjeta que termina en %@." : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Today is the cut-off day of your card ending in %@"
+          }
+        }
+      }
     },
     "Información de la tarjeta" : {
       "localizations" : {
@@ -405,10 +454,25 @@
       }
     },
     "Pagar Tarjeta" : {
-
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pay Card"
+          }
+        }
+      }
     },
     "Pago de tarjeta" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Payment Card"
+          }
+        }
+      }
     },
     "Registrar Compra" : {
       "localizations" : {
@@ -421,7 +485,14 @@
       }
     },
     "Registrar Pago" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Register Payment"
+          }
+        }
+      }
     },
     "Sin compras" : {
       "extractionState" : "stale",
@@ -435,7 +506,14 @@
       }
     },
     "Sin movimientos" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Whiteout movements"
+          }
+        }
+      }
     },
     "Sin Tarjetas" : {
       "localizations" : {

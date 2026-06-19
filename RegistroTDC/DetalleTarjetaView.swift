@@ -65,43 +65,7 @@ struct DetalleTarjetaView: View {
                     }
                     .tint(Gradient(colors: [.green, .yellow, .red]))
                     
-                    // --- BOTONES DE ACCIÓN RÁPIDA ---
-                    HStack(spacing: 12) {
-                        Button {
-                            mostrarFormularioCompra = true
-                        } label: {
-                            HStack {
-                                Image(systemName: "plus.circle.fill")
-                                Text("Registrar Compra")
-                                    .font(.subheadline)
-                                    .fontWeight(.semibold)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(Color.blue.opacity(0.15))
-                            .foregroundColor(.blue)
-                            .cornerRadius(10)
-                        }
-                        .buttonStyle(.plain)
-                        
-                        Button {
-                            mostrarFormularioPago = true
-                        } label: {
-                            HStack {
-                                Image(systemName: "checkmark.circle.fill")
-                                Text("Pagar Tarjeta")
-                                    .font(.subheadline)
-                                    .fontWeight(.semibold)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(Color.green.opacity(0.15))
-                            .foregroundColor(.green)
-                            .cornerRadius(10)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                    .padding(.top, 4)
+                    
                 }
                 .padding(.vertical, 8)
             }

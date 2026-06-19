@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		0B72C6172FD3CC0A0005A9CD /* RegistroTDC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RegistroTDC.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0B72C6172FD3CC0A0005A9CD /* Mis Tarjetas.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mis Tarjetas.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -40,7 +40,7 @@
 		0B72C6182FD3CC0A0005A9CD /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0B72C6172FD3CC0A0005A9CD /* RegistroTDC.app */,
+				0B72C6172FD3CC0A0005A9CD /* Mis Tarjetas.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,9 +48,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		0B72C6162FD3CC0A0005A9CD /* RegistroTDC */ = {
+		0B72C6162FD3CC0A0005A9CD /* Mis Tarjetas */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0B72C6222FD3CC0B0005A9CD /* Build configuration list for PBXNativeTarget "RegistroTDC" */;
+			buildConfigurationList = 0B72C6222FD3CC0B0005A9CD /* Build configuration list for PBXNativeTarget "Mis Tarjetas" */;
 			buildPhases = (
 				0B72C6132FD3CC0A0005A9CD /* Sources */,
 				0B72C6142FD3CC0A0005A9CD /* Frameworks */,
@@ -63,11 +63,11 @@
 			fileSystemSynchronizedGroups = (
 				0B72C6192FD3CC0A0005A9CD /* RegistroTDC */,
 			);
-			name = RegistroTDC;
+			name = "Mis Tarjetas";
 			packageProductDependencies = (
 			);
 			productName = RegistroTDC;
-			productReference = 0B72C6172FD3CC0A0005A9CD /* RegistroTDC.app */;
+			productReference = 0B72C6172FD3CC0A0005A9CD /* Mis Tarjetas.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -86,11 +86,12 @@
 				};
 			};
 			buildConfigurationList = 0B72C6122FD3CC0A0005A9CD /* Build configuration list for PBXProject "RegistroTDC" */;
-			developmentRegion = en;
+			developmentRegion = es;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
+				es,
 			);
 			mainGroup = 0B72C60E2FD3CC0A0005A9CD;
 			minimizedProjectReferenceProxies = 1;
@@ -99,7 +100,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				0B72C6162FD3CC0A0005A9CD /* RegistroTDC */,
+				0B72C6162FD3CC0A0005A9CD /* Mis Tarjetas */,
 			);
 		};
 /* End PBXProject section */
@@ -256,6 +257,7 @@
 				DEVELOPMENT_TEAM = 4M6NSA48QX;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "ecesitamos Face ID para mantener tus tarjetas de crédito seguras.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -289,6 +291,7 @@
 				DEVELOPMENT_TEAM = 4M6NSA48QX;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "ecesitamos Face ID para mantener tus tarjetas de crédito seguras.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -324,7 +327,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0B72C6222FD3CC0B0005A9CD /* Build configuration list for PBXNativeTarget "RegistroTDC" */ = {
+		0B72C6222FD3CC0B0005A9CD /* Build configuration list for PBXNativeTarget "Mis Tarjetas" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0B72C6232FD3CC0B0005A9CD /* Debug */,
