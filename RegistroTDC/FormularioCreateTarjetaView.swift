@@ -60,7 +60,9 @@ struct FormularioCreateTarjetaView: View {
                 
                 Section(header: Text("Configuración")) {
                     Picker("Tipo", selection: $tipoSeleccionado) {
-                        ForEach(tipos, id: \.self) { Text($0).tag($0) }
+                        ForEach(tipos, id: \.self) { tipo in
+                            Text(LocalizedStringKey(tipo)).tag(tipo)
+                        }
                     }
                     Stepper("Límite: $\(limiteCredito, specifier: "%.0f")", value: $limiteCredito, step: 100)
                     
@@ -97,6 +99,9 @@ struct FormularioCreateTarjetaView: View {
                         )
                         // Insertamos el objeto en SwiftData
                         modelContext.insert(nuevaTarjeta)
+                        
+                        // Programar la notificación para el día de corte
+                        NotificationManager.shared.programarNotificacionCorte(para: nuevaTarjeta)
                         
                         dismiss()
                     }

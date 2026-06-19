@@ -24,7 +24,7 @@ import SwiftData
 struct RegistroTDCApp: App {
     var body: some Scene {
         WindowGroup {
-            PantallaBloqueoView(razon: "Desbloquea para acceder a tus tarjetas") {
+            PantallaBloqueoView(razon: String(localized: "Desbloquea para acceder a tus tarjetas")) {
                 ContentView()
             }
         }

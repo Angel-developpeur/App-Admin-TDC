@@ -80,7 +80,7 @@ struct DetalleTarjetaView: View {
             // SECCIÓN 2: Información/Configuración de la tarjeta
             Section {
                 NavigationLink {
-                    PantallaBloqueoView(razon: "Desbloquea para ver el NIP") {
+                    PantallaBloqueoView(razon: String(localized: "Desbloquea para ver el NIP")) {
                         NipView(tarjeta: tarjeta)
                     }
                 } label: {

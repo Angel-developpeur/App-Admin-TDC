@@ -88,6 +88,10 @@ struct TarjetasView: View {
             .sheet(isPresented: $mostrarFormulario) {
                 FormularioCreateTarjetaView()
             }
+            .onAppear {
+                NotificationManager.shared.solicitarPermiso()
+                NotificationManager.shared.sincronizarNotificaciones(con: tarjetas)
+            }
         }
     }
 }

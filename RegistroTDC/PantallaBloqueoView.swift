@@ -92,12 +92,12 @@ struct PantallaBloqueoView<Content: View>: View {
                             estaDesbloqueado = true
                         }
                     } else {
-                        mensajeError = "No se pudo verificar la identidad."
+                        mensajeError = String(localized: "No se pudo verificar la identidad.")
                     }
                 }
             }
         } else {
-            mensajeError = "Este dispositivo no soporta biometría."
+            mensajeError = String(localized: "Este dispositivo no soporta biometría.")
         }
     }
 }
