@@ -31,6 +31,8 @@ struct PantallaBloqueoView<Content: View>: View {
     @State private var estaDesbloqueado = false
     @State private var mensajeError = ""
     
+    @Environment(\.scenePhase) private var scenePhase
+    
     // Inicializador genérico para admitir una sintaxis declarativa limpia
     init(razon: String = "Desbloquea para continuar", @ViewBuilder contenidoDestino: () -> Content) {
         self.razon = razon
@@ -38,43 +40,68 @@ struct PantallaBloqueoView<Content: View>: View {
     }
     
     var body: some View {
-        if estaDesbloqueado {
-            contenidoDestino
-        } else {
-            VStack(spacing: 20) {
-                Image(systemName: "lock.shield.fill")
-                    .font(.system(size: 80))
-                    .foregroundStyle(.primary)
-                
-                Text("Acceso Restringido")
-                    .font(.title2.bold())
-                
-                Text("Usa FaceID o el código del dispositivo para acceder")
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-                
-                if !mensajeError.isEmpty {
-                    Text(mensajeError)
-                        .foregroundStyle(.red)
-                        .font(.caption)
+        ZStack {
+            if estaDesbloqueado {
+                contenidoDestino
+            } else {
+                VStack(spacing: 20) {
+                    Image(systemName: "lock.shield.fill")
+                        .font(.system(size: 80))
+                        .foregroundStyle(.primary)
+                    
+                    Text("Acceso Restringido")
+                        .font(.title2.bold())
+                    
+                    Text("Usa FaceID o el código del dispositivo para acceder")
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                    
+                    if !mensajeError.isEmpty {
+                        Text(mensajeError)
+                            .foregroundStyle(.red)
+                            .font(.caption)
+                    }
+                    
+                    Button {
+                        autenticar()
+                    } label: {
+                        Label("Desbloquear", systemImage: "faceid")
+                            .font(.headline)
+                            .foregroundStyle(Color(uiColor: .systemBackground))
+                            .padding()
+                            .frame(maxWidth: 200)
+                            .background(Color.primary)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                    .padding(.top, 10)
                 }
-                
-                Button {
+                .onAppear {
                     autenticar()
-                } label: {
-                    Label("Desbloquear", systemImage: "faceid")
-                        .font(.headline)
-                        .foregroundStyle(Color(uiColor: .systemBackground))
-                        .padding()
-                        .frame(maxWidth: 200)
-                        .background(Color.primary)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
-                .padding(.top, 10)
             }
-            .onAppear {
-                autenticar()
+            
+            // Pantalla de protección para ocultar datos sensibles en segundo plano (App Switcher)
+            if scenePhase == .inactive || scenePhase == .background {
+                Color(uiColor: .systemBackground)
+                    .ignoresSafeArea()
+                    .overlay(
+                        VStack(spacing: 12) {
+                            Image(systemName: "lock.shield.fill")
+                                .font(.system(size: 60))
+                                .foregroundColor(.secondary)
+                            Text("Pantalla Protegida")
+                                .font(.headline)
+                                .foregroundColor(.secondary)
+                        }
+                    )
+                    .transition(.opacity)
+            }
+        }
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+            if newPhase == .background {
+                // Bloquear la pantalla al entrar en segundo plano para requerir autenticación al volver
+                estaDesbloqueado = false
             }
         }
     }
