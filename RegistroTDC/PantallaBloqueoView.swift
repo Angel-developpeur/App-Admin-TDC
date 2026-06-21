@@ -49,7 +49,7 @@ struct PantallaBloqueoView<Content: View>: View {
                 Text("Acceso Restringido")
                     .font(.title2.bold())
                 
-                Text("Usa FaceID para acceder")
+                Text("Usa FaceID o el código del dispositivo para acceder")
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
@@ -84,8 +84,8 @@ struct PantallaBloqueoView<Content: View>: View {
         let context = LAContext()
         var error: NSError?
         
-        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-            context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: razon) { exito, errorAutenticacion in
+        if context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) {
+            context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: razon) { exito, errorAutenticacion in
                 DispatchQueue.main.async {
                     if exito {
                         withAnimation {
@@ -97,7 +97,7 @@ struct PantallaBloqueoView<Content: View>: View {
                 }
             }
         } else {
-            mensajeError = String(localized: "Este dispositivo no soporta biometría.")
+            mensajeError = String(localized: "Este dispositivo no cuenta con bloqueo de seguridad configurado.")
         }
     }
 }
