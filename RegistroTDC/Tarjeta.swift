@@ -46,7 +46,6 @@ class Tarjeta {
     //relaciones
     @Relationship(deleteRule: .cascade) var compras: [Compra] = []
     
-    //contructor
     init(banco: String, ultimosDigitos: String, tipo: String, color: String, limiteCrdito: Int, nip: String, diaDeCorte: Int, creditoUsado: Int){
         self.id = UUID() // Inicializamos el ID único
         self.banco = banco
@@ -54,9 +53,9 @@ class Tarjeta {
         self.color = color
         self.ultimosDigitos = ultimosDigitos
         self.limiteCredito = limiteCrdito
-        self.nip = nip
         self.creditoUsado = creditoUsado
         self.diaDeCorte = diaDeCorte
+        self.nip = nip
     }
     
     var nombreLogo: String {
