@@ -79,7 +79,7 @@ struct DeudaView: View {
                         .padding(.horizontal)
                     
                     // Una lista limpia con el detalle de cada tarjeta
-                    VStack(spacing: 0) {
+                    ScrollView() {
                         ForEach(tarjetas) { tarjeta in
                             let deudaTarjeta = calcularDeuda(de: tarjeta)
                             
