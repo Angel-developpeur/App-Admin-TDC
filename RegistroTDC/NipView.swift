@@ -25,7 +25,6 @@ struct NipView: View {
     let tarjeta: Tarjeta
     
     @State private var mostrarNip = false
-    @State private var copiado = false
     
     var body: some View {
         ZStack {
@@ -150,29 +149,16 @@ struct NipView: View {
                 )
                 .padding(.horizontal)
                 
-                // 3. Acciones y Advertencia de Seguridad
-                VStack(spacing: 25) {
-                    Button {
-                        UIPasteboard.general.string = tarjeta.nip
-                        withAnimation {
-                            copiado = true
-                        }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            withAnimation {
-                                copiado = false
-                            }
-                        }
-                    } label: {
-                        HStack {
-                            Image(systemName: copiado ? "checkmark.circle.fill" : "doc.on.doc.fill")
-                            Text(copiado ? "NIP Copiado" : "Copiar NIP al portapapeles")
-                        }
-                        .font(.subheadline.bold())
-                        .foregroundStyle(copiado ? .green : .primary)
-                    }
-                    .disabled(tarjeta.nip.isEmpty)
-                    
-                    
+                // 3. Advertencia de Seguridad
+                VStack(spacing: 12) {
+                    Image(systemName: "exclamationmark.shield.fill")
+                        .font(.title2)
+                        .foregroundColor(.orange)
+                    Text("Nunca compartas tu NIP con nadie. Por seguridad, la opción de copiar al portapapeles ha sido deshabilitada.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 30)
                 }
                 
                 Spacer()
