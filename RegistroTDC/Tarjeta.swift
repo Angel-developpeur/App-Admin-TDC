@@ -32,7 +32,14 @@ class Tarjeta {
     var tipo: String
     var color: String
     var limiteCredito: Int
-    var nip: String
+    @Transient var nip: String {
+        get {
+            return KeychainHelper.shared.leer(clave: id.uuidString) ?? ""
+        }
+        set {
+            KeychainHelper.shared.guardar(clave: id.uuidString, valor: newValue)
+        }
+    }
     var diaDeCorte: Int
     var creditoUsado: Int
     
